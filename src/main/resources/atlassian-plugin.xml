@@ -36,6 +36,7 @@
     <component-import key="i18nResolver" interface="com.atlassian.sal.api.message.I18nResolver" />
     <component-import key="outlookDateManager" interface="com.atlassian.jira.web.util.OutlookDateManager" />
 
+
     <!-- Our Components -->
     <component name="Configuration Manager" key="configurationManager" class="com.meetme.plugins.jira.gerrit.data.GerritConfigurationImpl">
         <description>Stores the Gerrit configuration</description>
@@ -74,6 +75,7 @@
     </issue-tabpanel>
     <web-resource key="gerritReviewsTabPanel" name="GerritTabPanelResources">
         <context>jira.view.issue</context>
+        <context>jira.browse.project</context>
         <dependency>jira.webresources:viewissue</dependency>
         <!-- <resource type="download" name="tabpanel.js" location="scripts/gerrit-reviews-tabpanel.js" /> -->
         <resource type="download" name="tabpanel.css" location="styles/gerrit-reviews-tabpanel.css" />
@@ -88,6 +90,15 @@
         <!-- enable fast tab switch -->
         <supports-ajax-load>true</supports-ajax-load>
     </issue-tabpanel>
+
+    <!-- Project panel to list all the reviews of the project. -->
+    <project-tabpanel key="gerrit-reviews-project-panel" name="Gerrit reviews" class="com.meetme.plugins.jira.gerrit.projectpanel.GerritReviewsProjectPanel">
+      <description>Show Gerrit reviews for the current project.</description>
+      <label key="gerrit.projectpanel.label">Gerrit Reviews</label>
+      <order>100</order>
+      <resource type="i18n" name="i18n" location="i18n.projectpanel" />
+      <resource type="velocity" name="view" location="templates/gerrit-project-panel.vm" />
+    </project-tabpanel>
 
     <!-- View Issue right-side panel (disabled by default) -->
     <web-panel key="gerrit-reviews-side-panel" name="Gerrit Reviews Side Panel" i18n-name-key="gerrit-reviews-side-panel.name" location="atl.jira.view.issue.right.context" state="disabled">

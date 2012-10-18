@@ -217,4 +217,30 @@ public class IssueReviewsImpl implements IssueReviewsManager {
             return super.remove(key);
         }
     }
+
+    @Override
+    public List<GerritChange> getMergedReviews(String projectKey) throws GerritQueryException
+    {
+      return getProjectReviewsWithQuery(projectKey, "status:merged");
+    }
+
+    private List<GerritChange> getProjectReviewsWithQuery(String projectKey, String additionalQuery) throws GerritQueryException
+    {
+      List<GerritChange> changes;
+      String key = projectKey + additionalQuery;
+      if (lruCache.containsKey(key)) {
+          changes = lruCache.get(key);
+      } else {
+          changes = getReviewsFromGerrit(additionalQuery + " " + String.format(configuration.getProjectSearchQuery(), projectKey));
+          lruCache.put(projectKey, changes);
+      }
+
+      return changes;
+    }
+
+    @Override
+    public List<GerritChange> getAbandonnedReviews(String projectKey) throws GerritQueryException
+    {
+      return getProjectReviewsWithQuery(projectKey, "status:abandoned");
+    }
 }

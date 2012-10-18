@@ -19,6 +19,9 @@ import java.util.Date;
 
 import net.sf.json.JSONObject;
 
+import com.atlassian.jira.datetime.DateTimeFormatterFactory;
+import com.atlassian.jira.datetime.DateTimeFormatterFactoryImpl;
+import com.atlassian.jira.web.util.OutlookDate;
 import com.meetme.plugins.jira.gerrit.tabpanel.GerritEventKeys;
 import com.sonyericsson.hudson.plugins.gerrit.gerritevents.dto.attr.Change;
 
@@ -123,4 +126,5 @@ public class GerritChange extends Change implements Comparable<GerritChange> {
     public void setStatus(Status status) {
         this.status = status;
     }
+    
 }

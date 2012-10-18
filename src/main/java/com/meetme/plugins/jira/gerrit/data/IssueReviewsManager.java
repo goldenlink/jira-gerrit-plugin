@@ -46,6 +46,8 @@ public interface IssueReviewsManager {
      * @see GerritQueryHandler
      */
     public abstract List<GerritChange> getReviewsForProject(String projectKey) throws GerritQueryException;
+    public abstract List<GerritChange> getMergedReviews(String projectKey) throws GerritQueryException;
+    public abstract List<GerritChange> getAbandonnedReviews(String projectKey) throws GerritQueryException;
 
     /**
      * Performs an approval/review of a change.
@@ -67,4 +69,7 @@ public interface IssueReviewsManager {
      * @throws IOException
      */
     public abstract boolean doApprovals(String issueKey, List<GerritChange> changes, String args, Preferences prefs) throws IOException;
+
+    
+    
 }
