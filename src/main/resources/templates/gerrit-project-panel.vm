@@ -64,11 +64,6 @@ limitations under the License.
     #end
 -->
 
-#if ( $size == 0 )
-<div>
-No reviews
-</div>
-#else
    <div>
    <table>
     <tr>
@@ -85,111 +80,26 @@ No reviews
     </tr>
    </table>
    </div>
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable($mergeFrequency);
+        var options = {
+          title: 'Project performance'
+        };
 
-
-   #foreach ( $change in $changes ) 
-<div class="issue-data-block twixi-block collapsed $statusClass $openClass">
-    ## The concise version:
-    <div class="actionContainer twixi-wrap concise">
-        <a href="#" class="twixi">
-            <span class="icon twixi-closed">
-                <span>Show</span>
-            </span>
-        </a>
+        var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+</script> 
+<body>
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+  </body>
    
-        <div class="action-details flooded">
-            #reviewDetail( $change )
-        </div>
-       
-    </div>
-
-
-    ## The verbose version:
-    <div class="actionContainer twixi-wrap verbose">
-        <a href="#" class="twixi">
-            <span class="icon twixi-opened">
-                <span>Hide</span>
-            </span>
-        </a>
-        <div class="action-links">
-            ## Top-right links that show up while hovering
-            <a href="$change.url" target="gerrit-review-$change.number,$change.patchSet.number" title="$i18n.getText('gerrit.tabpanel.permalink')" class="icon icon-perma">
-                <span>Permalink</span>
-            </a>
-        </div>
-
-        ## Main action detail
-        <div class="action-details">
-            <span class="gerrit-review" title="$i18n.getText('gerrit.tabpanel.Review')">$i18n.getText('gerrit.tabpanel.Review'): </span>
-            $change.number,$change.patchSet.number
-            <a href="$change.url" target="gerrit-review-$change.number,$change.patchSet.number">$change.subject</a>
-            -
-            <span class="subText">
-            #set ( $formatLastUpdated = $outlookdate.format($change.getLastUpdated()) )
-            #set ( $isoLastUpdated = $outlookdate.formatIso8601($change.getLastUpdated()) )
-                <span class="date user-tz" title="$formatLastUpdated">
-                    <time datetime="$isoLastUpdated">$formatLastUpdated</time>
-                </span>
-            </span>
-        </div>
-
-        <div class="action-body">
-            <div>$i18n.getText("gerrit.tabpanel.Project"): $change.project</div>
-            <div>
-                $i18n.getText("gerrit.tabpanel.Status"):
-                #if ($change.isOpen())
-                $i18n.getText("gerrit.tabpanel.status.open")
-                #else
-                $i18n.getText("gerrit.tabpanel.status.closed")
-                #end
-                ($change.status)
-            </div>
-
-            <table border="0" padding="3" class="gerrit-review-approvals">
-                <tr>
-                    <th>$i18n.getText("gerrit.tabpanel.Approver")</th>
-                    <th>$i18n.getText("gerrit.tabpanel.Type")</th>
-                    <th>$i18n.getText("gerrit.tabpanel.Score")</th>
-                </tr>
-
-                #if (!$change.patchSet.approvals || !$change.patchSet.approvals.size())
-                <tr>
-                    <td colspan="3">
-                        <div class="aui-message warning">
-                            <span class="aui-icon icon-warning"></span>
-                            $i18n.getText("gerrit.tabpanel.no_approvals")
-                        </div>
-                    </td>
-                </tr>
-                #end
-
-                #foreach( $approval in $change.patchSet.approvals )
-                <tr>
-                    <td>
-                        #if ($approval.user)
-                        <a class="user-hover" rel="$approval.user.name" href="$baseurl/secure/ViewProfile.jspa?name=$approval.user.name">$approval.user.displayName</a>
-                        #else
-                        $approval.by
-                        #end
-                    </td>
-                    <td>$approval.type</td>
-                    <td width="40" class="#if ($approval.valueAsInt > 0)review-positive#else review-negative #end gerrit-review-score">
-                        #if ($approval.valueAsInt > 0)
-                        +$approval.valueAsInt
-                        #else
-                        $approval.valueAsInt
-                        #end
-                    </td>
-                </tr>
-                #end
-            </table>
-        </div>
-    </div>
-
-</div>
-#end
-
-#foreach ( $change in $merged ) 
+#if ( $size == 0 )
+   #foreach ( $change in $changes ) 
 <div class="issue-data-block twixi-block collapsed $statusClass $openClass">
     ## The concise version:
     <div class="actionContainer twixi-wrap concise">

@@ -1,9 +1,12 @@
 package com.meetme.plugins.jira.gerrit.projectpanel;
 
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.bouncycastle.jce.provider.JDKDSASigner.stdDSA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +37,7 @@ public class GerritReviewsProjectPanel extends AbstractProjectTabPanel
   private final IssueReviewsManager reviewsManager;
   private final DateTimeFormatter dateTimeFormatter;
   private final I18nResolver i18n;
+  private static final Calendar cal = Calendar.getInstance();
   
   public GerritReviewsProjectPanel(JiraAuthenticationContext jiraAuthenticationContext,
       UserManager userManager, ApplicationProperties applicationProperties, GerritConfiguration configuration,
@@ -59,7 +63,6 @@ public class GerritReviewsProjectPanel extends AbstractProjectTabPanel
   {
     Map<String, Object> ctx = super.createVelocityParams(context);
     List<GerritChange> openedReviews, mergedReviews, abandonnedReviews;
-//    GerritChange[] changes, merged, abandoned;
     ctx.put("test", "Test of context.");
     try
     {
@@ -74,22 +77,34 @@ public class GerritReviewsProjectPanel extends AbstractProjectTabPanel
       return ctx;
     } 
     
-//    changes = (GerritChange[]) openedReviews.toArray();
-//    merged = (GerritChange[]) mergedReviews.toArray();
-//    abandoned = (GerritChange[]) abandonnedReviews.toArray();
     if(openedReviews.isEmpty())
     {
       ctx.put("size",0);
     } else {
-//      Arrays.sort(changes);
-//      Arrays.sort(merged);
-//      Arrays.sort(abandoned);
       ctx.put("size",openedReviews.size());
       ctx.put("changes", openedReviews);
-      ctx.put("merged", mergedReviews);
-      ctx.put("abandoned", abandonnedReviews);
     }
+    ctx.put("merged", mergedReviews);
+    ctx.put("abandoned", abandonnedReviews);
     
+    int[] mergeFreq = new int[52];
+    
+    Date changeDate = null;
+    int week;
+    for (GerritChange change : mergedReviews)
+    {
+      changeDate = change.getLastUpdated();
+      cal.setTime(changeDate);
+      week = cal.get(Calendar.WEEK_OF_YEAR);
+      mergeFreq[week]++;
+    }
+    StringBuffer stb = new StringBuffer();
+    stb.append("[['Week','Merges']");
+    for (int i = 0; i < mergeFreq.length; i++){
+      stb.append(",['" + i + "',"+mergeFreq[i]+"]");
+    }
+    stb.append("]");
+    ctx.put("mergeFrequency", stb.toString());
     return ctx;
     
   }
