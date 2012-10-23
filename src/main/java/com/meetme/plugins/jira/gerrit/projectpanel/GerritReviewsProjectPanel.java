@@ -1,10 +1,13 @@
 package com.meetme.plugins.jira.gerrit.projectpanel;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.bouncycastle.jce.provider.JDKDSASigner.stdDSA;
 import org.slf4j.Logger;
@@ -87,22 +90,33 @@ public class GerritReviewsProjectPanel extends AbstractProjectTabPanel
     ctx.put("merged", mergedReviews);
     ctx.put("abandoned", abandonnedReviews);
     
-    int[] mergeFreq = new int[52];
+    StringBuffer stb = new StringBuffer();
+    stb.append("[['Date','Merges']");
     
-    Date changeDate = null;
-    int week;
+    Date changeDate;
+    int merges; 
+    
+    Map<Date,Integer> mergeFreq = new HashMap<Date, Integer>();
     for (GerritChange change : mergedReviews)
     {
       changeDate = change.getLastUpdated();
-      cal.setTime(changeDate);
-      week = cal.get(Calendar.WEEK_OF_YEAR);
-      mergeFreq[week]++;
+      if (mergeFreq.get(changeDate) == null)
+      {
+        merges = 1;
+      } else {
+        merges = mergeFreq.get(changeDate) +1;
+      }
+      
+      mergeFreq.put(changeDate, merges);
     }
-    StringBuffer stb = new StringBuffer();
-    stb.append("[['Week','Merges']");
-    for (int i = 0; i < mergeFreq.length; i++){
-      stb.append(",['" + i + "',"+mergeFreq[i]+"]");
+    
+    
+    for (Date mergeDate : mergeFreq.keySet())
+    {
+      SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yy");
+      stb.append(",[" + formater.format(mergeDate) + "," + mergeFreq.get(mergeDate)+"]");
     }
+ 
     stb.append("]");
     ctx.put("mergeFrequency", stb.toString());
     return ctx;
