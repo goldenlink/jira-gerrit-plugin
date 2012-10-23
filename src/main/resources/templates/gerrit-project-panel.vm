@@ -54,7 +54,7 @@ limitations under the License.
     #else
     ($change.status)
     #end
-    #end
+
 
     #set( $statusClass = "gerrit-status-$change.status" )
     #if ($change.isOpen())
@@ -62,8 +62,8 @@ limitations under the License.
     #else
     #set( $openClass = "gerrit-review-closed" )
     #end
+    #end 
 -->
-
    <div>
    <table>
     <tr>
@@ -78,9 +78,8 @@ limitations under the License.
         <td>Abandoned reviews : </td>
         <td>$abandoned.size()</td>       
     </tr>
-   </table>
-   </div>
-<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    </table>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
       google.load("visualization", "1", {packages:["corechart"]});
       google.setOnLoadCallback(drawChart);
@@ -93,12 +92,17 @@ limitations under the License.
         var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
         chart.draw(data, options);
       }
-</script> 
-<body>
-    <div id="chart_div" style="width: 900px; height: 500px;"></div>
-  </body>
-   
-#if ( $size == 0 )
+</script>
+<div id="chart_div" style="float: right; width: 450px; height: 450px;"></div>
+    </div>
+    
+
+
+
+
+
+
+#if ( $size > 0 )
    #foreach ( $change in $changes ) 
 <div class="issue-data-block twixi-block collapsed $statusClass $openClass">
     ## The concise version:
